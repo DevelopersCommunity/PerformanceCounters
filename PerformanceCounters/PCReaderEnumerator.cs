@@ -33,27 +33,27 @@ namespace DevelopersCommunity.PerformanceCounters
 
         private void Open()
         {
-            CheckPdhStatus(NativeMethods.PdhOpenQuery(fileName, IntPtr.Zero, out queryHandle));
+            NativeUtil.CheckPdhStatus(NativeMethods.PdhOpenQuery(fileName, IntPtr.Zero, out queryHandle));
 
             if (start.HasValue || end.HasValue)
             {
                 var timeInfo = new NativeMethods.PDH_TIME_INFO();
-                timeInfo.StartTime = start.HasValue ? FileTimeFromDateTime(start.Value) : 0;
-                timeInfo.EndTime = end.HasValue ? FileTimeFromDateTime(end.Value) : long.MaxValue;
-                CheckPdhStatus(NativeMethods.PdhSetQueryTimeRange(queryHandle, ref timeInfo));
+                timeInfo.StartTime = start.HasValue ? NativeUtil.FileTimeFromDateTime(start.Value) : 0;
+                timeInfo.EndTime = end.HasValue ? NativeUtil.FileTimeFromDateTime(end.Value) : long.MaxValue;
+                NativeUtil.CheckPdhStatus(NativeMethods.PdhSetQueryTimeRange(queryHandle, ref timeInfo));
             }
 
             foreach (string counter in expandedCounters)
             {
                 IntPtr counterHandle;
-                CheckPdhStatus(NativeMethods.PdhAddCounter(queryHandle, counter, IntPtr.Zero, out counterHandle));
+                NativeUtil.CheckPdhStatus(NativeMethods.PdhAddCounter(queryHandle, counter, IntPtr.Zero, out counterHandle));
                 counterHandles.Add(counter, counterHandle);
             }
 
-            var status = NativeMethods.PdhCollectQueryData(queryHandle);//Removes the first sample. It is always PDH_INVALID_DATA
+            var status = NativeMethods.PdhCollectQueryData(queryHandle);
             if (status != NativeMethods.PDH_NO_MORE_DATA)
             {
-                CheckPdhStatus(status);
+                NativeUtil.CheckPdhStatus(status);
             }
         }
 
@@ -79,7 +79,7 @@ namespace DevelopersCommunity.PerformanceCounters
                     }
                     else
                     {
-                        CheckPdhStatus(status);
+                        NativeUtil.CheckPdhStatus(status);
                         formattedValue = value.doubleValue;
                     }
 
@@ -104,8 +104,13 @@ namespace DevelopersCommunity.PerformanceCounters
             var status = NativeMethods.PdhCollectQueryDataWithTime(queryHandle, out date);
             if (status == NativeMethods.PDH_NO_MORE_DATA)
                 return false;
-            CheckPdhStatus(status);
-            currentTimeStamp = DateTimeFromFileTime(date);
+            NativeUtil.CheckPdhStatus(status);
+            currentTimeStamp = NativeUtil.DateTimeFromFileTime(date);
+
+            // Workaround: if supplied date range is ahead of date range available in blg, PDH return the whole list
+            if (start > currentTimeStamp)
+                return false;
+
             return true;
         }
 
@@ -122,47 +127,11 @@ namespace DevelopersCommunity.PerformanceCounters
             var status = NativeMethods.PdhExpandWildCardPath(fileName, wildCard, null, ref len, 0);
             if (status != NativeMethods.PDH_MORE_DATA)
             {
-                CheckPdhStatus(status);
+                NativeUtil.CheckPdhStatus(status);
             }
             var buffer = new char[len];
-            CheckPdhStatus(NativeMethods.PdhExpandWildCardPath(fileName, wildCard, buffer, ref len, 0));
-            return PCReader.MultipleStringsToList(buffer);
-        }
-
-        internal static long FileTimeFromDateTime(DateTime date)
-        {
-            var st = new NativeMethods.SYSTEMTIME
-            {
-                wYear = (ushort)date.Year,
-                wMonth = (ushort)date.Month,
-                wDay = (ushort)date.Day,
-                wHour = (ushort)date.Hour,
-                wMinute = (ushort)date.Minute,
-                wSecond = (ushort)date.Second,
-                wMilliseconds = (ushort)date.Millisecond,
-                wDayOfWeek = (ushort)date.DayOfWeek
-            };
-
-            long ft;
-            if (!NativeMethods.SystemTimeToFileTime(ref st, out ft)) throw new Win32Exception();
-
-            return ft;
-        }
-
-        internal static DateTime DateTimeFromFileTime(long date)
-        {
-            NativeMethods.SYSTEMTIME st;
-            if (!NativeMethods.FileTimeToSystemTime(ref date, out st)) throw new Win32Exception();
-
-            return new DateTime(st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, DateTimeKind.Local);
-        }
-
-        internal static void CheckPdhStatus(uint status)
-        {
-            if (status != NativeMethods.ERROR_SUCCESS)
-            {
-                throw new PCException(status);
-            }
+            NativeUtil.CheckPdhStatus(NativeMethods.PdhExpandWildCardPath(fileName, wildCard, buffer, ref len, 0));
+            return NativeUtil.MultipleStringsToList(buffer);
         }
 
         #region IDisposable Support

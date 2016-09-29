@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="NativeUtil.cs" />
     <Compile Include="PCException.cs" />
     <Compile Include="PCItem.cs" />
     <Compile Include="PCReaderEnumerator.cs" />

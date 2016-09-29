@@ -24,10 +24,6 @@ namespace DevelopersCommunity.PerformanceCounters
             {
                 throw new ArgumentException("End time <= start time", nameof(end));
             }
-            if (start >= GetEndTime(fileName))
-            {
-                throw new ArgumentOutOfRangeException("Start time > end of file", nameof(end));
-            }
             this.fileName = fileName;
             this.counters = counters;
             this.start = start;
@@ -42,14 +38,10 @@ namespace DevelopersCommunity.PerformanceCounters
             if (status == NativeMethods.PDH_MORE_DATA)
             {
                 computers = new char[len];
-                status = NativeMethods.PdhEnumMachines(fileName, computers, ref len);
-            }
-            if (status != NativeMethods.ERROR_SUCCESS)
-            {
-                throw new PCException(status);
+                NativeUtil.CheckPdhStatus(NativeMethods.PdhEnumMachines(fileName, computers, ref len));
             }
 
-            return MultipleStringsToList(computers);
+            return NativeUtil.MultipleStringsToList(computers);
         }
 
         private static DateTime GetEndTime(string name)
@@ -58,36 +50,8 @@ namespace DevelopersCommunity.PerformanceCounters
             NativeMethods.PDH_TIME_INFO timeInfo;
             uint size = (uint)Marshal.SizeOf<NativeMethods.PDH_TIME_INFO>();
 
-            PCReaderEnumerator.CheckPdhStatus(NativeMethods.PdhGetDataSourceTimeRange(name, out numEntries, out timeInfo, ref size));
-            return PCReaderEnumerator.DateTimeFromFileTime(timeInfo.EndTime);
-        }
-
-        internal static IReadOnlyList<string> MultipleStringsToList(char[] multipleStrings)
-        {
-            var list = new List<string>();
-            var item = new StringBuilder();
-
-            for (int i = 0; i < multipleStrings.Length; i++)
-            {
-                if (multipleStrings[i] != '\0')
-                {
-                    item.Append(multipleStrings[i]);
-                }
-                else
-                {
-                    if (item.Length > 0)
-                    {
-                        list.Add(item.ToString());
-                        item.Length = 0;
-                    }
-                    if (multipleStrings[i + 1] == '\0')
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return list;
+            NativeUtil.CheckPdhStatus(NativeMethods.PdhGetDataSourceTimeRange(name, out numEntries, out timeInfo, ref size));
+            return NativeUtil.DateTimeFromFileTime(timeInfo.EndTime);
         }
 
         public IEnumerator<IReadOnlyList<PCItem>> GetEnumerator()
