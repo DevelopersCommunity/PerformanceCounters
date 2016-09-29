@@ -25,9 +25,15 @@ namespace DevelopersCommunity.PerformanceCounters
                 throw new ArgumentException("End time <= start time", nameof(end));
             }
             this.fileName = fileName;
-            this.counters = counters;
             this.start = start;
             this.end = end;
+
+            List<string> expandedCounters = new List<string>();
+            foreach (string wildCard in counters)
+            {
+                expandedCounters.AddRange(ExpandWildCard(wildCard));
+            }
+            this.counters = expandedCounters.ToArray();
         }
 
         public IReadOnlyList<string> GetMachines()
@@ -54,6 +60,19 @@ namespace DevelopersCommunity.PerformanceCounters
             return NativeUtil.DateTimeFromFileTime(timeInfo.EndTime);
         }
 
+        private IReadOnlyList<string> ExpandWildCard(string wildCard)
+        {
+            uint len = 0;
+            var status = NativeMethods.PdhExpandWildCardPath(fileName, wildCard, null, ref len, 0);
+            if (status != NativeMethods.PDH_MORE_DATA)
+            {
+                NativeUtil.CheckPdhStatus(status);
+            }
+            var buffer = new char[len];
+            NativeUtil.CheckPdhStatus(NativeMethods.PdhExpandWildCardPath(fileName, wildCard, buffer, ref len, 0));
+            return NativeUtil.MultipleStringsToList(buffer);
+        }
+
         public IEnumerator<IReadOnlyList<PCItem>> GetEnumerator()
         {
             return new PCReaderEnumerator(fileName, counters, start, end);
@@ -61,7 +80,7 @@ namespace DevelopersCommunity.PerformanceCounters
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new PCReaderEnumerator(fileName, counters, start, end);
+            return GetEnumerator();
         }
     }
 }

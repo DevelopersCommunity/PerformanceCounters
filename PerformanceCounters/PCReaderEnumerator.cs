@@ -13,20 +13,17 @@ namespace DevelopersCommunity.PerformanceCounters
         string fileName;
         DateTime? start;
         DateTime? end;
-        List<string> expandedCounters = new List<string>();
+        string[] expandedCounters;
 
         private PCReaderEnumerator()
         { }
 
-        public PCReaderEnumerator(string fileName, string[] counters, DateTime? start, DateTime? end)
+        public PCReaderEnumerator(string fileName, string[] expandedCounters, DateTime? start, DateTime? end)
         {
             this.fileName = fileName;
             this.start = start;
             this.end = end;
-            foreach (string wildCard in counters)
-            {
-                expandedCounters.AddRange(ExpandWildCard(wildCard));
-            }
+            this.expandedCounters = expandedCounters;
 
             Open();
         }
@@ -119,19 +116,6 @@ namespace DevelopersCommunity.PerformanceCounters
             queryHandle.Dispose();
             counterHandles.Clear();
             Open();
-        }
-
-        private IReadOnlyList<string> ExpandWildCard(string wildCard)
-        {
-            uint len = 0;
-            var status = NativeMethods.PdhExpandWildCardPath(fileName, wildCard, null, ref len, 0);
-            if (status != NativeMethods.PDH_MORE_DATA)
-            {
-                NativeUtil.CheckPdhStatus(status);
-            }
-            var buffer = new char[len];
-            NativeUtil.CheckPdhStatus(NativeMethods.PdhExpandWildCardPath(fileName, wildCard, buffer, ref len, 0));
-            return NativeUtil.MultipleStringsToList(buffer);
         }
 
         #region IDisposable Support
