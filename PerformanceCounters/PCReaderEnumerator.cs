@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace DevelopersCommunity.PerformanceCounters
 {
-    class PCReaderEnumerator : IEnumerator<ReadOnlyCollection<PCItem>>, IEnumerator
+    class PCReaderEnumerator : IEnumerator<IReadOnlyList<PCItem>>, IEnumerator
     {
         PdhQueryHandle queryHandle;
         Dictionary<string, IntPtr> counterHandles = new Dictionary<string, IntPtr>();
@@ -61,7 +61,7 @@ namespace DevelopersCommunity.PerformanceCounters
             }
         }
 
-        public ReadOnlyCollection<PCItem> Current
+        public IReadOnlyList<PCItem> Current
         {
             get
             {
@@ -90,7 +90,7 @@ namespace DevelopersCommunity.PerformanceCounters
                     items.Add(new PCItem(currentTimeStamp, pair.Key, formattedValue)); 
                 }
 
-                return new ReadOnlyCollection<PCItem>(items);
+                return items;
             }
         }
 
@@ -120,7 +120,7 @@ namespace DevelopersCommunity.PerformanceCounters
             Open();
         }
 
-        ReadOnlyCollection<string> ExpandWildCard(string wildCard)
+        IReadOnlyList<string> ExpandWildCard(string wildCard)
         {
             uint len = 0;
             uint status = NativeMethods.PdhExpandWildCardPath(fileName, wildCard, null, ref len, 0);

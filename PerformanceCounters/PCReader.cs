@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DevelopersCommunity.PerformanceCounters
 {
-    public class PCReader : IEnumerable<ReadOnlyCollection<PCItem>>
+    public class PCReader : IEnumerable<IReadOnlyList<PCItem>>
     {
         private string fileName;
         private string[] counters;
@@ -30,7 +30,7 @@ namespace DevelopersCommunity.PerformanceCounters
             this.end = end;
         }
 
-        public ReadOnlyCollection<string> GetComputers()
+        public IReadOnlyList<string> GetComputers()
         {
             uint len = 0;
             uint status = NativeMethods.PdhEnumMachines(fileName, null, ref len);
@@ -48,7 +48,7 @@ namespace DevelopersCommunity.PerformanceCounters
             return MultipleStringsToList(computers);
         }
 
-        internal static ReadOnlyCollection<string> MultipleStringsToList(char[] multipleStrings)
+        internal static IReadOnlyList<string> MultipleStringsToList(char[] multipleStrings)
         {
             var list = new List<string>();
             var item = new StringBuilder();
@@ -70,10 +70,10 @@ namespace DevelopersCommunity.PerformanceCounters
             }
 
             list.Sort();
-            return new ReadOnlyCollection<string>(list);
+            return list;
         }
 
-        public IEnumerator<ReadOnlyCollection<PCItem>> GetEnumerator()
+        public IEnumerator<IReadOnlyList<PCItem>> GetEnumerator()
         {
             return new PCReaderEnumerator(fileName, counters, start, end);
         }
