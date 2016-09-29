@@ -8,7 +8,7 @@ namespace PerformanceCounters
     [Serializable]
     public class PCException : Exception, ISerializable
     {
-        uint statusCode;
+        uint StatusCode { get; }
 
         public PCException()
         {
@@ -16,12 +16,12 @@ namespace PerformanceCounters
 
         public PCException(uint statusCode) : base(FormatMessage(statusCode))
         {
-            this.statusCode = statusCode;
+            StatusCode = statusCode;
         }
 
         public PCException(uint statusCode, Exception innerException) : base(FormatMessage(statusCode), innerException)
         {
-            this.statusCode = statusCode;
+            StatusCode = statusCode;
         }
 
         public PCException(string message) : base(message)
