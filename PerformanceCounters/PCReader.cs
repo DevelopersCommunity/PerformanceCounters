@@ -58,7 +58,7 @@ namespace DevelopersCommunity.PerformanceCounters
             NativeMethods.PDH_TIME_INFO timeInfo;
             uint size = (uint)Marshal.SizeOf<NativeMethods.PDH_TIME_INFO>();
 
-            NativeMethods.PdhGetDataSourceTimeRange(name, out numEntries, out timeInfo, ref size);
+            PCReaderEnumerator.CheckPdhStatus(NativeMethods.PdhGetDataSourceTimeRange(name, out numEntries, out timeInfo, ref size));
             return PCReaderEnumerator.DateTimeFromFileTime(timeInfo.EndTime);
         }
 

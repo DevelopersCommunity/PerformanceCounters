@@ -157,7 +157,7 @@ namespace DevelopersCommunity.PerformanceCounters
             return new DateTime(st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, DateTimeKind.Local);
         }
 
-        private void CheckPdhStatus(uint status)
+        internal static void CheckPdhStatus(uint status)
         {
             if (status != NativeMethods.ERROR_SUCCESS)
             {
