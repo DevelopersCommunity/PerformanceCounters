@@ -13,18 +13,19 @@ namespace PerformanceCounters
         Dictionary<string, IntPtr> counterHandles = new Dictionary<string, IntPtr>();
         DateTime currentTimeStamp;
         string fileName;
-        bool isEmpty;
 
         public PCReaderEnumerator(string fileName, string[] counters, DateTime? start, DateTime? end)
         {
             this.fileName = fileName;
             CheckPdhStatus(NativeMethods.PdhOpenQuery(fileName, IntPtr.Zero, out queryHandle));
 
-            var timeInfo = new NativeMethods.PDH_TIME_INFO();
-            timeInfo.StartTime = start.HasValue ? FileTimeFromDateTime(start.Value) : 0;
-            timeInfo.EndTime = end.HasValue ? FileTimeFromDateTime(end.Value) : long.MaxValue;
             if (start.HasValue || end.HasValue)
+            {
+                var timeInfo = new NativeMethods.PDH_TIME_INFO();
+                timeInfo.StartTime = start.HasValue ? FileTimeFromDateTime(start.Value) : 0;
+                timeInfo.EndTime = end.HasValue ? FileTimeFromDateTime(end.Value) : long.MaxValue;
                 CheckPdhStatus(NativeMethods.PdhSetQueryTimeRange(queryHandle, ref timeInfo));
+            }
 
             foreach (string wildCard in counters)
             {
@@ -37,11 +38,7 @@ namespace PerformanceCounters
             }
 
             var status = NativeMethods.PdhCollectQueryData(queryHandle);//Removes the first sample. It is always PDH_INVALID_DATA
-            if (status == NativeMethods.PDH_NO_MORE_DATA)
-            {
-                isEmpty = true;
-            }
-            else
+            if (status != NativeMethods.PDH_NO_MORE_DATA)
             {
                 CheckPdhStatus(status);
             }
@@ -90,10 +87,6 @@ namespace PerformanceCounters
 
         public bool MoveNext()
         {
-            if (isEmpty)
-            {
-                return false;
-            }
             long date;
             var status = NativeMethods.PdhCollectQueryDataWithTime(queryHandle, out date);
             if (status == NativeMethods.PDH_NO_MORE_DATA)
