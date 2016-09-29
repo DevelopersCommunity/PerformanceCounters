@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace DevelopersCommunity.PerformanceCounters
@@ -23,13 +24,17 @@ namespace DevelopersCommunity.PerformanceCounters
             {
                 throw new ArgumentException("End time <= start time", nameof(end));
             }
+            if (start >= GetEndTime(fileName))
+            {
+                throw new ArgumentOutOfRangeException("Start time > end of file", nameof(end));
+            }
             this.fileName = fileName;
             this.counters = counters;
             this.start = start;
             this.end = end;
         }
 
-        public IReadOnlyList<string> GetComputers()
+        public IReadOnlyList<string> GetMachines()
         {
             uint len = 0;
             uint status = NativeMethods.PdhEnumMachines(fileName, null, ref len);
@@ -45,6 +50,16 @@ namespace DevelopersCommunity.PerformanceCounters
             }
 
             return MultipleStringsToList(computers);
+        }
+
+        private static DateTime GetEndTime(string name)
+        {
+            uint numEntries;
+            NativeMethods.PDH_TIME_INFO timeInfo;
+            uint size = (uint)Marshal.SizeOf<NativeMethods.PDH_TIME_INFO>();
+
+            NativeMethods.PdhGetDataSourceTimeRange(name, out numEntries, out timeInfo, ref size);
+            return PCReaderEnumerator.DateTimeFromFileTime(timeInfo.EndTime);
         }
 
         internal static IReadOnlyList<string> MultipleStringsToList(char[] multipleStrings)

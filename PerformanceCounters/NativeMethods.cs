@@ -121,5 +121,9 @@ namespace DevelopersCommunity.PerformanceCounters
         internal static extern uint PdhExpandWildCardPath(string szDataSource, string szWildCardPath,
             [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] char[] mszExpandedPathList,
             ref uint pcchPathListLength, uint dwFlags);
+
+        [DllImport("pdh.dll", CharSet = CharSet.Unicode)]
+        internal static extern uint PdhGetDataSourceTimeRange(string szDataSource, out uint pdwNumEntries,
+            out PDH_TIME_INFO pInfo, ref uint pdwBufferSize);
     }
 }

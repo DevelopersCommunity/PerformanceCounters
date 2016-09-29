@@ -129,7 +129,7 @@ namespace DevelopersCommunity.PerformanceCounters
             return PCReader.MultipleStringsToList(buffer);
         }
 
-        private long FileTimeFromDateTime(DateTime date)
+        internal static long FileTimeFromDateTime(DateTime date)
         {
             var st = new NativeMethods.SYSTEMTIME
             {
@@ -149,7 +149,7 @@ namespace DevelopersCommunity.PerformanceCounters
             return ft;
         }
 
-        private DateTime DateTimeFromFileTime(long date)
+        internal static DateTime DateTimeFromFileTime(long date)
         {
             NativeMethods.SYSTEMTIME st;
             if (!NativeMethods.FileTimeToSystemTime(ref date, out st)) throw new Win32Exception();
