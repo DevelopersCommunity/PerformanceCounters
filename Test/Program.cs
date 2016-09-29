@@ -1,5 +1,6 @@
 ﻿using System;
 using DevelopersCommunity.PerformanceCounters;
+using System.Diagnostics;
 
 namespace Test
 {
@@ -32,14 +33,25 @@ namespace Test
             //    }
             //}
 
-            enumerator.Reset();
-            while (enumerator.MoveNext())
+            Stopwatch c = Stopwatch.StartNew();
+
+            for (int i = 0; i < 10; i++)
             {
-                foreach (var item in enumerator.Current)
+                enumerator.Reset();//Expensive
+                while (enumerator.MoveNext()) //foreach is slower
                 {
-                    Console.WriteLine("{0},{1},{2}", item.CounterPath, item.TimeStamp, item.Value);
+                    foreach (var item in enumerator.Current)
+                    {
+                        //Console.WriteLine("{0},{1},{2}", item.CounterPath, item.TimeStamp, item.Value);
+                    }
                 }
             }
+
+            c.Stop();
+
+            Console.WriteLine($"{c.ElapsedMilliseconds}ms");//Relog takes 1162ms to iterate 100x
+            Console.ReadLine();
         }
     }
 }
+
