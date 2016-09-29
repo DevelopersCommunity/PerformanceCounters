@@ -13,10 +13,31 @@ namespace DevelopersCommunity.PerformanceCounters
         Dictionary<string, IntPtr> counterHandles = new Dictionary<string, IntPtr>();
         DateTime currentTimeStamp;
         string fileName;
+        DateTime? start;
+        DateTime? end;
+        List<string> expandedCounters = new List<string>();
+
+        private PCReaderEnumerator()
+        { }
 
         public PCReaderEnumerator(string fileName, string[] counters, DateTime? start, DateTime? end)
         {
             this.fileName = fileName;
+            this.start = start;
+            this.end = end;
+            foreach (string wildCard in counters)
+            {
+                foreach (string counter in ExpandWildCard(wildCard))
+                {
+                    expandedCounters.Add(counter);
+                }
+            }
+
+            Open();
+        }
+
+        private void Open()
+        {
             CheckPdhStatus(NativeMethods.PdhOpenQuery(fileName, IntPtr.Zero, out queryHandle));
 
             if (start.HasValue || end.HasValue)
@@ -27,14 +48,11 @@ namespace DevelopersCommunity.PerformanceCounters
                 CheckPdhStatus(NativeMethods.PdhSetQueryTimeRange(queryHandle, ref timeInfo));
             }
 
-            foreach (string wildCard in counters)
+            foreach (string counter in expandedCounters)
             {
-                foreach (string counter in ExpandWildCard(wildCard))
-                {
-                    IntPtr counterHandle;
-                    CheckPdhStatus(NativeMethods.PdhAddCounter(queryHandle, counter, IntPtr.Zero, out counterHandle));
-                    counterHandles.Add(counter, counterHandle);
-                }
+                IntPtr counterHandle;
+                CheckPdhStatus(NativeMethods.PdhAddCounter(queryHandle, counter, IntPtr.Zero, out counterHandle));
+                counterHandles.Add(counter, counterHandle);
             }
 
             var status = NativeMethods.PdhCollectQueryData(queryHandle);//Removes the first sample. It is always PDH_INVALID_DATA
@@ -98,7 +116,9 @@ namespace DevelopersCommunity.PerformanceCounters
 
         public void Reset()
         {
-            throw new NotSupportedException();
+            queryHandle.Dispose();
+            counterHandles.Clear();
+            Open();
         }
 
         string[] ExpandWildCard(string wildCard)
