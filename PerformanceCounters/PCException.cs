@@ -14,9 +14,8 @@ namespace PerformanceCounters
         {
         }
 
-        public PCException(uint statusCode) : base(FormatMessage(statusCode))
+        public PCException(uint statusCode) : this(statusCode, null)
         {
-            StatusCode = statusCode;
         }
 
         public PCException(uint statusCode, Exception innerException) : base(FormatMessage(statusCode), innerException)
