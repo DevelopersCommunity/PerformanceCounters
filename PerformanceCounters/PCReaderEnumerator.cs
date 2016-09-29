@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 
 namespace DevelopersCommunity.PerformanceCounters
 {
@@ -121,7 +120,7 @@ namespace DevelopersCommunity.PerformanceCounters
             Open();
         }
 
-        string[] ExpandWildCard(string wildCard)
+        ReadOnlyCollection<string> ExpandWildCard(string wildCard)
         {
             uint len = 0;
             uint status = NativeMethods.PdhExpandWildCardPath(fileName, wildCard, null, ref len, 0);
@@ -131,7 +130,7 @@ namespace DevelopersCommunity.PerformanceCounters
             }
             char[] buffer = new char[len];
             CheckPdhStatus(NativeMethods.PdhExpandWildCardPath(fileName, wildCard, buffer, ref len, 0));
-            return PCReader.MultipleStringsToList(buffer).ToArray();
+            return PCReader.MultipleStringsToList(buffer);
         }
 
         private long FileTimeFromDateTime(DateTime date)
