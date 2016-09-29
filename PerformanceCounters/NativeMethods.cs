@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace PerformanceCounters
+namespace DevelopersCommunity.PerformanceCounters
 {
     internal static class NativeMethods
     {

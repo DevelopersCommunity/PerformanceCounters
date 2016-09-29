@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace PerformanceCounters
+namespace DevelopersCommunity.PerformanceCounters
 {
     [Serializable]
     public class PCException : Exception, ISerializable

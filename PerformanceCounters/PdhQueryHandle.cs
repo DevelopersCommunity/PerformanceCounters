@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32.SafeHandles;
 
-namespace PerformanceCounters
+namespace DevelopersCommunity.PerformanceCounters
 {
     internal class PdhQueryHandle : SafeHandleZeroOrMinusOneIsInvalid
     {

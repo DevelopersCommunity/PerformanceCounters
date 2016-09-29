@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace PerformanceCounters
+namespace DevelopersCommunity.PerformanceCounters
 {
     public class PCReader : IEnumerable<ReadOnlyCollection<PCItem>>
     {

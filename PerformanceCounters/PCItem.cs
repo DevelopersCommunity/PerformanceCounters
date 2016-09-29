@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PerformanceCounters
+namespace DevelopersCommunity.PerformanceCounters
 {
     public struct PCItem
     {

@@ -7,7 +7,7 @@
     <ProjectGuid>{390CE122-6F6B-498F-ACEC-9AF78490B2F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PerformanceCounters</RootNamespace>
+    <RootNamespace>DevelopersCommunity.PerformanceCounters</RootNamespace>
     <AssemblyName>PerformanceCounters</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

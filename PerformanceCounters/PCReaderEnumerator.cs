@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
-namespace PerformanceCounters
+namespace DevelopersCommunity.PerformanceCounters
 {
     class PCReaderEnumerator : IEnumerator<ReadOnlyCollection<PCItem>>, IEnumerator
     {
