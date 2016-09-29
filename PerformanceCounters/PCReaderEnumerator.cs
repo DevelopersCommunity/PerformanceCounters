@@ -13,6 +13,7 @@ namespace PerformanceCounters
         Dictionary<string, IntPtr> counterHandles = new Dictionary<string, IntPtr>();
         DateTime currentTimeStamp;
         string fileName;
+        bool isEmpty;
 
         public PCReaderEnumerator(string fileName, string[] counters, DateTime start, DateTime end)
         {
@@ -35,7 +36,15 @@ namespace PerformanceCounters
                 }
             }
 
-            CheckPdhStatus(NativeMethods.PdhCollectQueryData(queryHandle));
+            var status = NativeMethods.PdhCollectQueryData(queryHandle);//Removes the first sample. It is always PDH_INVALID_DATA
+            if (status == NativeMethods.PDH_NO_MORE_DATA)
+            {
+                isEmpty = true;
+            }
+            else
+            {
+                CheckPdhStatus(status);
+            }
         }
 
         public ReadOnlyCollection<PCItem> Current
@@ -81,6 +90,10 @@ namespace PerformanceCounters
 
         public bool MoveNext()
         {
+            if (isEmpty)
+            {
+                return false;
+            }
             long date;
             var status = NativeMethods.PdhCollectQueryDataWithTime(queryHandle, out date);
             if (status == NativeMethods.PDH_NO_MORE_DATA)
@@ -138,13 +151,9 @@ namespace PerformanceCounters
 
         private void CheckPdhStatus(uint status)
         {
-            if (status != NativeMethods.ERROR_SUCCESS && status != NativeMethods.PDH_NO_MORE_DATA)
+            if (status != NativeMethods.ERROR_SUCCESS)
             {
                 throw new PCException(status);
-            }
-            if (status == NativeMethods.PDH_NO_MORE_DATA)
-            {
-                System.Diagnostics.Debug.WriteLine($"{fileName} contains no data on the current filters");
             }
         }
 
