@@ -146,7 +146,7 @@ namespace PerformanceCounters
             NativeMethods.SYSTEMTIME st;
             if (!NativeMethods.FileTimeToSystemTime(ref date, out st)) throw new Win32Exception();
 
-            return new DateTime(st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMinute, DateTimeKind.Local);
+            return new DateTime(st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, DateTimeKind.Local);
         }
 
         private void CheckPdhStatus(uint status)
