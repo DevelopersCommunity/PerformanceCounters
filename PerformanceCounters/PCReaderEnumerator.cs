@@ -26,10 +26,7 @@ namespace DevelopersCommunity.PerformanceCounters
             this.end = end;
             foreach (string wildCard in counters)
             {
-                foreach (string counter in ExpandWildCard(wildCard))
-                {
-                    expandedCounters.Add(counter);
-                }
+                expandedCounters.AddRange(ExpandWildCard(wildCard));
             }
 
             Open();
@@ -65,13 +62,13 @@ namespace DevelopersCommunity.PerformanceCounters
         {
             get
             {
-                List<PCItem> items = new List<PCItem>();
+                var items = new List<PCItem>();
 
                 foreach (var pair in counterHandles)
                 {
                     NativeMethods.PDH_FMT_COUNTERVALUE value;
                     double formattedValue;
-                    uint status = 
+                    var status = 
                         NativeMethods.PdhGetFormattedCounterValue(pair.Value, NativeMethods.PDH_FMT_DOUBLE, IntPtr.Zero, out value);
 
                     if (status == NativeMethods.PDH_CALC_NEGATIVE_DENOMINATOR ||
@@ -120,15 +117,15 @@ namespace DevelopersCommunity.PerformanceCounters
             Open();
         }
 
-        IReadOnlyList<string> ExpandWildCard(string wildCard)
+        private IReadOnlyList<string> ExpandWildCard(string wildCard)
         {
             uint len = 0;
-            uint status = NativeMethods.PdhExpandWildCardPath(fileName, wildCard, null, ref len, 0);
+            var status = NativeMethods.PdhExpandWildCardPath(fileName, wildCard, null, ref len, 0);
             if (status != NativeMethods.PDH_MORE_DATA)
             {
                 CheckPdhStatus(status);
             }
-            char[] buffer = new char[len];
+            var buffer = new char[len];
             CheckPdhStatus(NativeMethods.PdhExpandWildCardPath(fileName, wildCard, buffer, ref len, 0));
             return PCReader.MultipleStringsToList(buffer);
         }
