@@ -8,9 +8,9 @@ namespace PerformanceCounters
     [Serializable]
     public class PCException : Exception, ISerializable
     {
-        uint StatusCode { get; }
+        public uint StatusCode { get; }
 
-        public PCException()
+        protected PCException()
         {
         }
 
@@ -23,11 +23,11 @@ namespace PerformanceCounters
             StatusCode = statusCode;
         }
 
-        public PCException(string message) : base(message)
+        protected PCException(string message) : base(message)
         {
         }
 
-        public PCException(string message, Exception innerException) : base(message, innerException)
+        protected PCException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
