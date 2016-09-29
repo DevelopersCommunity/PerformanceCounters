@@ -61,8 +61,11 @@ namespace DevelopersCommunity.PerformanceCounters
                 }
                 else
                 {
-                    list.Add(item.ToString());
-                    item.Length = 0;
+                    if (item.Length > 0)
+                    {
+                        list.Add(item.ToString());
+                        item.Length = 0;
+                    }
                     if (multipleStrings[i + 1] == '\0')
                     {
                         break;
