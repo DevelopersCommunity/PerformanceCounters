@@ -84,7 +84,7 @@ namespace PerformanceCounters
         {
             get
             {
-                throw new NotImplementedException();
+                return Current;
             }
         }
 
@@ -105,7 +105,7 @@ namespace PerformanceCounters
 
         public void Reset()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         string[] ExpandWildCard(string wildCard)
