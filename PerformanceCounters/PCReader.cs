@@ -31,7 +31,7 @@ namespace DevelopersCommunity.PerformanceCounters
             List<string> expandedCounters = new List<string>();
             foreach (string wildCard in counters)
             {
-                expandedCounters.AddRange(ExpandWildCard(wildCard));
+                expandedCounters.AddRange(NativeUtil.ExpandWildCard(fileName, wildCard));
             }
             this.counters = expandedCounters.ToArray();
         }
@@ -58,19 +58,6 @@ namespace DevelopersCommunity.PerformanceCounters
 
             NativeUtil.CheckPdhStatus(NativeMethods.PdhGetDataSourceTimeRange(name, out numEntries, out timeInfo, ref size));
             return NativeUtil.DateTimeFromFileTime(timeInfo.EndTime);
-        }
-
-        private IReadOnlyList<string> ExpandWildCard(string wildCard)
-        {
-            uint len = 0;
-            var status = NativeMethods.PdhExpandWildCardPath(fileName, wildCard, null, ref len, 0);
-            if (status != NativeMethods.PDH_MORE_DATA)
-            {
-                NativeUtil.CheckPdhStatus(status);
-            }
-            var buffer = new char[len];
-            NativeUtil.CheckPdhStatus(NativeMethods.PdhExpandWildCardPath(fileName, wildCard, buffer, ref len, 0));
-            return NativeUtil.MultipleStringsToList(buffer);
         }
 
         public IEnumerator<IReadOnlyList<PCItem>> GetEnumerator()

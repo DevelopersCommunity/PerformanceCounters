@@ -105,5 +105,20 @@ namespace DevelopersCommunity.PerformanceCounters
 
             return list;
         }
+
+        internal static IReadOnlyList<string> ExpandWildCard(string fileName, string wildCard)
+        {
+            uint len = 0;
+            var status = NativeMethods.PdhExpandWildCardPath(fileName, wildCard, null, ref len, 0);
+            if (status != NativeMethods.PDH_MORE_DATA)
+            {
+                NativeUtil.CheckPdhStatus(status);
+            }
+            var buffer = new char[len];
+            NativeUtil.CheckPdhStatus(NativeMethods.PdhExpandWildCardPath(fileName, wildCard, buffer, ref len, 0));
+            return NativeUtil.MultipleStringsToList(buffer);
+        }
+
+
     }
 }
