@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+//using System.Security;
 
 namespace DevelopersCommunity.PerformanceCounters
 {
+    //[SuppressUnmanagedCodeSecurity]
     internal static class NativeMethods
     {
         internal const uint FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;

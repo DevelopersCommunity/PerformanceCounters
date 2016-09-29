@@ -36,7 +36,7 @@ namespace Test
 
             Stopwatch c = Stopwatch.StartNew();
 
-            PCReader pcr = new PCReader(file, counters, new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Local), new DateTime(2016, 9, 15, 17, 33, 00, DateTimeKind.Local));
+            PCReader pcr = new PCReader(file, counters, new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Local), new DateTime(2016, 9, 15, 17, 47, 00, DateTimeKind.Local));
             using (var enumerator = pcr.GetEnumerator())
             {
                 for (int i = 0; i < 10; i++)
@@ -94,9 +94,7 @@ namespace Test
 
             Console.WriteLine($"Foreach: {c.ElapsedMilliseconds}ms");
 
-            //Relog takes 1162ms to iterate 100x
-            //1 - We are taking 2255ms to iterate 10x using MoveNext+Reset and 6600ms using foreach
-            //2 - Now we are iterating using foreach 2100ms
+            //Relog takes 2229ms
         }
     }
 }
