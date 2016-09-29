@@ -138,9 +138,13 @@ namespace PerformanceCounters
 
         private void CheckPdhStatus(uint status)
         {
-            if (status != NativeMethods.ERROR_SUCCESS)
+            if (status != NativeMethods.ERROR_SUCCESS && status != NativeMethods.PDH_NO_MORE_DATA)
             {
                 throw new PCException(status);
+            }
+            if (status == NativeMethods.PDH_NO_MORE_DATA)
+            {
+                System.Diagnostics.Debug.WriteLine($"{fileName} contains no data on the current filters");
             }
         }
 
