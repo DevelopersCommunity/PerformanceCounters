@@ -15,15 +15,15 @@ namespace PerformanceCounters
         string fileName;
         bool isEmpty;
 
-        public PCReaderEnumerator(string fileName, string[] counters, DateTime start, DateTime end)
+        public PCReaderEnumerator(string fileName, string[] counters, DateTime? start, DateTime? end)
         {
             this.fileName = fileName;
             CheckPdhStatus(NativeMethods.PdhOpenQuery(fileName, IntPtr.Zero, out queryHandle));
 
             var timeInfo = new NativeMethods.PDH_TIME_INFO();
-            timeInfo.StartTime = start == DateTime.MinValue ? 0 : FileTimeFromDateTime(start);
-            timeInfo.EndTime = end == DateTime.MaxValue ? long.MaxValue : FileTimeFromDateTime(end);
-            if (start != DateTime.MinValue || end != DateTime.MaxValue)
+            timeInfo.StartTime = start.HasValue ? FileTimeFromDateTime(start.Value) : 0;
+            timeInfo.EndTime = end.HasValue ? FileTimeFromDateTime(end.Value) : long.MaxValue;
+            if (start.HasValue || end.HasValue)
                 CheckPdhStatus(NativeMethods.PdhSetQueryTimeRange(queryHandle, ref timeInfo));
 
             foreach (string wildCard in counters)

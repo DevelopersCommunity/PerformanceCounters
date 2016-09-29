@@ -10,15 +10,15 @@ namespace PerformanceCounters
     {
         private string fileName;
         private string[] counters;
-        private DateTime start;
-        private DateTime end;
+        private DateTime? start;
+        private DateTime? end;
 
-        public PCReader(string fileName, string[] counters) : this(fileName, counters, DateTime.MinValue, DateTime.MaxValue)
+        public PCReader(string fileName, string[] counters) : this(fileName, counters, null, null)
         {
 
         }
 
-        public PCReader(string fileName, string[] counters, DateTime start, DateTime end)
+        public PCReader(string fileName, string[] counters, DateTime? start, DateTime? end)
         {
             if (end <= start)
             {
