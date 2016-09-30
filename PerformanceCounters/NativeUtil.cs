@@ -64,10 +64,12 @@ namespace DevelopersCommunity.PerformanceCounters
 
         internal static DateTime DateTimeFromFileTime(long date)
         {
-            NativeMethods.SYSTEMTIME st;
-            if (!NativeMethods.FileTimeToSystemTime(ref date, out st)) throw new Win32Exception();
+            return  DateTime.FromFileTimeUtc(date);//TODO Test to avoid a PInvoke call (does it need to be Kind=Local?)
 
-            return new DateTime(st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, DateTimeKind.Local);
+            //NativeMethods.SYSTEMTIME st;
+            //if (!NativeMethods.FileTimeToSystemTime(ref date, out st)) throw new Win32Exception();
+
+            //return new DateTime(st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, DateTimeKind.Local);
         }
 
         internal static void CheckPdhStatus(uint status)
