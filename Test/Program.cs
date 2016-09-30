@@ -13,8 +13,8 @@ namespace Test
 
             //PCReader pcr = new PCReader(args[0], counters);
             PCReader pcr = new PCReader(args[0], counters,
-                new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Local),
-                new DateTime(2016, 9, 15, 17, 33, 00, DateTimeKind.Local));
+                new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Unspecified),
+                new DateTime(2016, 9, 15, 17, 33, 00, DateTimeKind.Unspecified));
             var enumerator = pcr.GetEnumerator();
 
             while (enumerator.MoveNext())
@@ -36,7 +36,7 @@ namespace Test
 
             Stopwatch c = Stopwatch.StartNew();
 
-            PCReader pcr = new PCReader(file, counters, new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Local), new DateTime(2016, 9, 15, 17, 47, 00, DateTimeKind.Local));
+            PCReader pcr = new PCReader(file, counters, new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Unspecified), new DateTime(2016, 9, 15, 17, 47, 00, DateTimeKind.Unspecified));
             using (var enumerator = pcr.GetEnumerator())
             {
                 for (int i = 0; i < 10; i++)

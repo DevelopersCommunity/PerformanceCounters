@@ -44,7 +44,7 @@ namespace DevelopersCommunity.PerformanceCounters
 
         internal static long FileTimeFromDateTime(DateTime date)
         {
-            return DateTime.SpecifyKind(date, DateTimeKind.Utc).ToFileTimeUtc();
+            return date.ToFileTimeUtc();//TODO Test to avoid a PInvoke call
 
             //TODO It is apparently losing the timezone, but is working. Maybe BLG files doesn't track timezones and record the local time as UTC time.
             //Needs to ensure if we will have problem we analyzing servers in different timezones, some customers uses UTC.
@@ -79,7 +79,7 @@ namespace DevelopersCommunity.PerformanceCounters
 
         internal static DateTime DateTimeFromFileTime(long date)
         {
-            return  DateTime.FromFileTimeUtc(date);//TODO Test to avoid a PInvoke call (does it need to be Kind=Local?)
+            return  DateTime.FromFileTimeUtc(date);//TODO Test to avoid a PInvoke call
 
             //NativeMethods.SYSTEMTIME st;
             //if (!NativeMethods.FileTimeToSystemTime(ref date, out st)) throw new Win32Exception();
