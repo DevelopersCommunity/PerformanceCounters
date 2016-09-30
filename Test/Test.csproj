@@ -50,7 +50,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PerformanceCounters\PerformanceCounters.csproj">
+    <ProjectReference Include="..\src\PerformanceCounters\PerformanceCounters.csproj">
       <Project>{390ce122-6f6b-498f-acec-9af78490b2f7}</Project>
       <Name>PerformanceCounters</Name>
     </ProjectReference>

@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceCounters", "PerformanceCounters\PerformanceCounters.csproj", "{390CE122-6F6B-498F-ACEC-9AF78490B2F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{B7949EB6-AADC-45BD-B365-75E37F16A1F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "..\test\Test.csproj", "{B7949EB6-AADC-45BD-B365-75E37F16A1F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
