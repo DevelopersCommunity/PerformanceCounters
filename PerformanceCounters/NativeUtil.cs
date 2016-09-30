@@ -44,6 +44,21 @@ namespace DevelopersCommunity.PerformanceCounters
 
         internal static long FileTimeFromDateTime(DateTime date)
         {
+            return DateTime.SpecifyKind(date, DateTimeKind.Utc).ToFileTimeUtc();
+
+            //TODO It is apparently losing the timezone, but is working. Maybe BLG files doesn't track timezones and record the local time as UTC time.
+            //Needs to ensure if we will have problem we analyzing servers in different timezones, some customers uses UTC.
+            //Due to this behavior, we need to set the Kind to Utc before calling ToFileTimeUtc
+
+            //date.ToString("O")
+            //"2016-09-15T17:32:00.0000000-03:00"
+
+            //DateTime.FromFileTimeUtc(ft).ToString("O")
+            //"2016-09-15T17:32:00.0000000Z"
+
+            //DateTime.FromFileTime(ft).ToString("O")
+            //"2016-09-15T14:32:00.0000000-03:00"
+
             var st = new NativeMethods.SYSTEMTIME
             {
                 wYear = (ushort)date.Year,
@@ -57,7 +72,7 @@ namespace DevelopersCommunity.PerformanceCounters
             };
 
             long ft;
-            if (!NativeMethods.SystemTimeToFileTime(ref st, out ft)) throw new Win32Exception();
+            if (!NativeMethods.SystemTimeToFileTime(ref st, out ft)) throw new Win32Exception();            
 
             return ft;
         }
