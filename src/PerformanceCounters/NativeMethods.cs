@@ -23,6 +23,7 @@ namespace DevelopersCommunity.PerformanceCounters
         internal const uint PDH_INVALID_DATA = 0xC0000BC6;
         internal const uint PDH_NO_MORE_DATA = 0xC0000BCC;
         internal const uint PDH_ENTRY_NOT_IN_LOG_FILE = 0xC0000BCD;
+        internal const uint PDH_CSTATUS_NO_OBJECT = 0xC0000BB8;
 
         internal const uint PDH_FMT_DOUBLE = 0x00000200;
 

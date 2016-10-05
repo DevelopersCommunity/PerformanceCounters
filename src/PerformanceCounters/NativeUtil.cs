@@ -134,6 +134,11 @@ namespace DevelopersCommunity.PerformanceCounters
                     System.Diagnostics.Debug.WriteLine("PDH_ENTRY_NOT_IN_LOG_FILE");
                     return new List<string>();
                 }
+                if (status == NativeMethods.PDH_CSTATUS_NO_OBJECT)
+                {
+                    System.Diagnostics.Debug.WriteLine("PDH_CSTATUS_NO_OBJECT");
+                    return new List<string>();
+                }
                 CheckPdhStatus(status);
             }
             var buffer = new char[len];
