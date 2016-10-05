@@ -15,12 +15,14 @@ namespace DevelopersCommunity.PerformanceCounters
         internal const uint FORMAT_MESSAGE_FROM_STRING = 0x00000400;
 
         internal const uint ERROR_SUCCESS = 0;
+        internal const uint PDH_NO_DATA = 0x800007D5;
         internal const uint PDH_MORE_DATA = 0x800007D2;
         internal const uint PDH_CALC_NEGATIVE_DENOMINATOR = 0x800007D6;
         internal const uint PDH_CALC_NEGATIVE_VALUE = 0x800007D8;
         internal const uint PDH_CALC_NEGATIVE_TIMEBASE = 0x800007D7;
         internal const uint PDH_INVALID_DATA = 0xC0000BC6;
         internal const uint PDH_NO_MORE_DATA = 0xC0000BCC;
+        internal const uint PDH_ENTRY_NOT_IN_LOG_FILE = 0xC0000BCD;
 
         internal const uint PDH_FMT_DOUBLE = 0x00000200;
 

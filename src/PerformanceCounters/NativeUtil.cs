@@ -72,14 +72,14 @@ namespace DevelopersCommunity.PerformanceCounters
             };
 
             long ft;
-            if (!NativeMethods.SystemTimeToFileTime(ref st, out ft)) throw new Win32Exception();            
+            if (!NativeMethods.SystemTimeToFileTime(ref st, out ft)) throw new Win32Exception();
 
             return ft;
         }
 
         internal static DateTime DateTimeFromFileTime(long date)
         {
-            return  DateTime.FromFileTimeUtc(date);//TODO Test to avoid a PInvoke call
+            return DateTime.FromFileTimeUtc(date);//TODO Test to avoid a PInvoke call
 
             //NativeMethods.SYSTEMTIME st;
             //if (!NativeMethods.FileTimeToSystemTime(ref date, out st)) throw new Win32Exception();
@@ -129,6 +129,11 @@ namespace DevelopersCommunity.PerformanceCounters
             var status = NativeMethods.PdhExpandWildCardPath(fileName, wildCard, null, ref len, 0);
             if (status != NativeMethods.PDH_MORE_DATA)
             {
+                if (status == NativeMethods.PDH_ENTRY_NOT_IN_LOG_FILE)
+                {
+                    System.Diagnostics.Debug.WriteLine("PDH_ENTRY_NOT_IN_LOG_FILE");
+                    return new List<string>();
+                }
                 CheckPdhStatus(status);
             }
             var buffer = new char[len];
