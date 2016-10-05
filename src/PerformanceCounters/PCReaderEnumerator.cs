@@ -48,7 +48,7 @@ namespace DevelopersCommunity.PerformanceCounters
             }
 
             var status = NativeMethods.PdhCollectQueryData(queryHandle);
-            if (status != NativeMethods.PDH_NO_MORE_DATA)
+            if (status != NativeMethods.PDH_NO_MORE_DATA && status != NativeMethods.PDH_NO_DATA)
             {
                 NativeUtil.CheckPdhStatus(status);
             }
@@ -99,7 +99,7 @@ namespace DevelopersCommunity.PerformanceCounters
         {
             long date;
             var status = NativeMethods.PdhCollectQueryDataWithTime(queryHandle, out date);
-            if (status == NativeMethods.PDH_NO_MORE_DATA)
+            if (status == NativeMethods.PDH_NO_MORE_DATA || status == NativeMethods.PDH_NO_DATA)
                 return false;
             NativeUtil.CheckPdhStatus(status);
             currentTimeStamp = NativeUtil.DateTimeFromFileTime(date);
