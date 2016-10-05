@@ -59,22 +59,22 @@ namespace DevelopersCommunity.PerformanceCounters
             //DateTime.FromFileTime(ft).ToString("O")
             //"2016-09-15T14:32:00.0000000-03:00"
 
-            var st = new NativeMethods.SYSTEMTIME
-            {
-                wYear = (ushort)date.Year,
-                wMonth = (ushort)date.Month,
-                wDay = (ushort)date.Day,
-                wHour = (ushort)date.Hour,
-                wMinute = (ushort)date.Minute,
-                wSecond = (ushort)date.Second,
-                wMilliseconds = (ushort)date.Millisecond,
-                wDayOfWeek = (ushort)date.DayOfWeek
-            };
+            //var st = new NativeMethods.SYSTEMTIME
+            //{
+            //    wYear = (ushort)date.Year,
+            //    wMonth = (ushort)date.Month,
+            //    wDay = (ushort)date.Day,
+            //    wHour = (ushort)date.Hour,
+            //    wMinute = (ushort)date.Minute,
+            //    wSecond = (ushort)date.Second,
+            //    wMilliseconds = (ushort)date.Millisecond,
+            //    wDayOfWeek = (ushort)date.DayOfWeek
+            //};
 
-            long ft;
-            if (!NativeMethods.SystemTimeToFileTime(ref st, out ft)) throw new Win32Exception();
+            //long ft;
+            //if (!NativeMethods.SystemTimeToFileTime(ref st, out ft)) throw new Win32Exception();            
 
-            return ft;
+            //return ft;
         }
 
         internal static DateTime DateTimeFromFileTime(long date)
