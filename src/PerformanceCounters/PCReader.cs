@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace DevelopersCommunity.PerformanceCounters
 {
@@ -13,12 +13,12 @@ namespace DevelopersCommunity.PerformanceCounters
         private DateTime? start;
         private DateTime? end;
 
-        public PCReader(string fileName, string[] counters) : this(fileName, counters, null, null)
+        public PCReader(string fileName, IEnumerable<string> counters, bool expandCounter) : this(fileName, counters, expandCounter, null, null)
         {
 
         }
 
-        public PCReader(string fileName, string[] counters, DateTime? start, DateTime? end)
+        public PCReader(string fileName, IEnumerable<string> counters, bool expandCounter, DateTime? start, DateTime? end)
         {
             if (end <= start)
             {
@@ -28,12 +28,19 @@ namespace DevelopersCommunity.PerformanceCounters
             this.start = start;
             this.end = end;
 
-            List<string> expandedCounters = new List<string>();
-            foreach (string wildCard in counters)
+            if (expandCounter)
             {
-                expandedCounters.AddRange(NativeUtil.ExpandWildCard(fileName, wildCard));
+                List<string> expandedCounters = new List<string>();
+                foreach (string wildCard in counters)
+                {
+                    expandedCounters.AddRange(NativeUtil.ExpandWildCard(fileName, wildCard));
+                }
+                this.counters = expandedCounters.ToArray();
             }
-            this.counters = expandedCounters.ToArray();
+            else
+            {
+                this.counters = counters.ToArray();
+            }
         }
 
         public IReadOnlyList<string> GetMachines()
@@ -48,6 +55,11 @@ namespace DevelopersCommunity.PerformanceCounters
             }
 
             return NativeUtil.MultipleStringsToList(computers);
+        }
+
+        public static IEnumerable<string> ExpandWildCard(string fileName, string wildCard)
+        {
+            return NativeUtil.ExpandWildCard(fileName, wildCard);
         }
 
         private static DateTime GetEndTime(string name)

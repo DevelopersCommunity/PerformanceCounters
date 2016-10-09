@@ -1,6 +1,7 @@
 ﻿using System;
 using DevelopersCommunity.PerformanceCounters;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Test
 {
@@ -11,8 +12,14 @@ namespace Test
             //string[] counters = { @"\\DESKTOP-355R7FE\Processor(*)\% Processor Time" };
             string[] counters = { @"\\*\Processor(*)\% Processor Time" };
 
+            List<string> expandedCounters = new List<string>();
+            foreach (string wildCard in counters)
+            {
+                expandedCounters.AddRange(PCReader.ExpandWildCard(args[0], wildCard));
+            }
+
             //PCReader pcr = new PCReader(args[0], counters);
-            PCReader pcr = new PCReader(args[0], counters,
+            PCReader pcr = new PCReader(args[0], expandedCounters, false,
                 new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Unspecified),
                 new DateTime(2016, 9, 15, 17, 33, 00, DateTimeKind.Unspecified));
             var enumerator = pcr.GetEnumerator();
@@ -36,7 +43,7 @@ namespace Test
 
             Stopwatch c = Stopwatch.StartNew();
 
-            PCReader pcr = new PCReader(file, counters, new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Unspecified), new DateTime(2016, 9, 15, 17, 47, 00, DateTimeKind.Unspecified));
+            PCReader pcr = new PCReader(file, counters, true, new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Unspecified), new DateTime(2016, 9, 15, 17, 47, 00, DateTimeKind.Unspecified));
             using (var enumerator = pcr.GetEnumerator())
             {
                 for (int i = 0; i < 10; i++)
