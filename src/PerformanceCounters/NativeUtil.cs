@@ -95,6 +95,13 @@ namespace DevelopersCommunity.PerformanceCounters
             }
         }
 
+        internal static IEnumerable<string> MultipleStringsToList(string multipleStrings)
+        {
+            var result = multipleStrings.Split(new[] { '\0' }, StringSplitOptions.RemoveEmptyEntries);
+
+            return result;
+        }
+
         internal static IReadOnlyList<string> MultipleStringsToList(char[] multipleStrings)
         {
             var list = new List<string>();

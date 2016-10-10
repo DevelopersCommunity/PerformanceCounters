@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-//using System.Security;
 
 namespace DevelopersCommunity.PerformanceCounters
 {
-    //[SuppressUnmanagedCodeSecurity]
     internal static class NativeMethods
     {
         internal const uint FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
@@ -24,6 +22,8 @@ namespace DevelopersCommunity.PerformanceCounters
         internal const uint PDH_NO_MORE_DATA = 0xC0000BCC;
         internal const uint PDH_ENTRY_NOT_IN_LOG_FILE = 0xC0000BCD;
         internal const uint PDH_CSTATUS_NO_OBJECT = 0xC0000BB8;
+        internal const uint PDH_DIALOG_CANCELLED = 0x800007D9;
+
 
         internal const uint PDH_FMT_DOUBLE = 0x00000200;
 
@@ -70,6 +70,40 @@ namespace DevelopersCommunity.PerformanceCounters
             public ushort wMilliseconds;
         }
 
+        public delegate uint CounterPathCallBack(UIntPtr arg);
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal unsafe struct PDH_BROWSE_DLG_CONFIG
+        {
+            public PDH_BROWSE_DLG_CONFIG_Flags Flags;
+            public IntPtr hWndOwner;
+            public string DataSource;
+            
+            public byte* ReturnPathBuffer;
+            public uint ReturnPathLength;
+            public CounterPathCallBack CallBack;
+            public UIntPtr CallBackArg;
+            public uint CallBackStatus;//PDH_STATUS
+            public uint DefaultDetailLevel;
+            public string DialogBoxCaption;
+        }
+
+        [Flags]
+        internal enum PDH_BROWSE_DLG_CONFIG_Flags : uint
+        {
+            IncludeInstanceIndex = 1,
+            SingleCounterPerAdd = 2,
+            SingleCounterPerDialog = 4,
+            LocalCountersOnly = 8,
+            WildCardInstances = 16,
+            HideDetailBox = 32,
+            InitializePath = 64,
+            DisableMachineSelection = 128,
+            IncludeCostlyObjects = 256,
+            ShowObjectBrowser = 512
+        }
+
+
         //[StructLayout(LayoutKind.Sequential)]
         //internal struct FILETIME
         //{
@@ -90,7 +124,7 @@ namespace DevelopersCommunity.PerformanceCounters
         internal static extern IntPtr LoadLibrary(string lpModuleName);
 
         [DllImport("Kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        internal static extern uint FormatMessage(uint dwFlags, IntPtr lpSource, 
+        internal static extern uint FormatMessage(uint dwFlags, IntPtr lpSource,
             uint dwMessageId, uint dwLanguageId, ref IntPtr lpBuffer,
             uint nSize, IntPtr Arguments);
 
@@ -130,5 +164,8 @@ namespace DevelopersCommunity.PerformanceCounters
         [DllImport("pdh.dll", CharSet = CharSet.Unicode)]
         internal static extern uint PdhGetDataSourceTimeRange(string szDataSource, out uint pdwNumEntries,
             out PDH_TIME_INFO pInfo, ref uint pdwBufferSize);
+
+        [DllImport("pdh.dll")]
+        internal static extern uint PdhBrowseCounters(ref PDH_BROWSE_DLG_CONFIG config);
     }
 }

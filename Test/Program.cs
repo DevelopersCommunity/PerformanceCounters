@@ -9,6 +9,7 @@ namespace Test
     {
         static void Main(string[] args)
         {
+            PCReader.BrowseCounters(args[0]);
             //string[] counters = { @"\\DESKTOP-355R7FE\Processor(*)\% Processor Time" };
             string[] counters = { @"\\*\Processor(*)\% Processor Time" };
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace DevelopersCommunity.PerformanceCounters
 {
@@ -60,6 +61,50 @@ namespace DevelopersCommunity.PerformanceCounters
         public static IEnumerable<string> ExpandWildCard(string fileName, string wildCard)
         {
             return NativeUtil.ExpandWildCard(fileName, wildCard);
+        }
+
+        //TODO se for possivel tirar o unsafe, tirar tb a flag do projeto
+        public unsafe static IEnumerable<string> BrowseCounters(string fileName)
+        {
+            NativeMethods.PDH_BROWSE_DLG_CONFIG config = new NativeMethods.PDH_BROWSE_DLG_CONFIG();
+
+            config.Flags |= NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.WildCardInstances
+                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.IncludeInstanceIndex
+                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.HideDetailBox
+                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.DisableMachineSelection
+                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.IncludeCostlyObjects
+                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.SingleCounterPerAdd
+                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.SingleCounterPerDialog
+                ;
+            //config.DataSource = fileName;
+            config.DialogBoxCaption = "Teste 123";
+            config.DefaultDetailLevel = 400;//TODO validar
+
+            const int bufferSize = 10000;
+            var temp = new byte[bufferSize];
+            List<string> addedCounters = new List<string>();
+
+            config.CallBack = x => {
+                var status = config.CallBackStatus;
+                addedCounters.AddRange(NativeUtil.MultipleStringsToList(Encoding.UTF8.GetString(temp)));
+                return 0;
+            };
+
+            //TODO separar e implementar iterator
+            fixed (byte* t = temp)
+            {
+                config.ReturnPathBuffer = t;
+                config.ReturnPathLength = bufferSize;
+
+                var status = NativeMethods.PdhBrowseCounters(ref config);
+
+                if (status != NativeMethods.PDH_DIALOG_CANCELLED)
+                {
+                    NativeUtil.CheckPdhStatus(status);
+                }              
+            }
+
+            return addedCounters;
         }
 
         private static DateTime GetEndTime(string name)
