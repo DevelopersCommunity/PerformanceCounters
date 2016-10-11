@@ -76,8 +76,8 @@ namespace DevelopersCommunity.PerformanceCounters
                 | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.SingleCounterPerAdd
                 | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.SingleCounterPerDialog
                 ;
-            //config.DataSource = fileName;
-            config.DialogBoxCaption = "Teste 123";
+            config.DataSource = fileName;
+            //config.DialogBoxCaption = "Teste 123";
             config.DefaultDetailLevel = 400;//TODO validar
 
             const int bufferSize = 10000;
