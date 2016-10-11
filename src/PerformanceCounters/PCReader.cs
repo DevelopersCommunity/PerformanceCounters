@@ -64,7 +64,7 @@ namespace DevelopersCommunity.PerformanceCounters
         }
 
         //TODO se for possivel tirar o unsafe, tirar tb a flag do projeto
-        public unsafe static IEnumerable<string> BrowseCounters(string fileName)
+        public unsafe static IEnumerable<string> BrowseCounters(string title, string fileName)
         {
             NativeMethods.PDH_BROWSE_DLG_CONFIG config = new NativeMethods.PDH_BROWSE_DLG_CONFIG();
 
@@ -77,7 +77,7 @@ namespace DevelopersCommunity.PerformanceCounters
                 | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.SingleCounterPerDialog
                 ;
             config.DataSource = fileName;
-            //config.DialogBoxCaption = "Teste 123";
+            config.DialogBoxCaption = title;
             config.DefaultDetailLevel = 400;//TODO validar
 
             const int bufferSize = 10000;
