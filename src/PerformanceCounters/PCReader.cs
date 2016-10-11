@@ -73,7 +73,7 @@ namespace DevelopersCommunity.PerformanceCounters
                 | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.HideDetailBox
                 | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.DisableMachineSelection
                 | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.IncludeCostlyObjects
-                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.SingleCounterPerAdd
+                //| NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.SingleCounterPerAdd
                 | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.SingleCounterPerDialog
                 ;
             config.DataSource = fileName;
