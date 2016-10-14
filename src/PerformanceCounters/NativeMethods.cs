@@ -78,7 +78,7 @@ namespace DevelopersCommunity.PerformanceCounters
             public ushort wMilliseconds;
         }
 
-        public delegate uint CounterPathCallBack(UIntPtr arg);
+        public delegate uint CounterPathCallBack(IntPtr arg);
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         internal struct PDH_BROWSE_DLG_CONFIG
