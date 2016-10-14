@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace DevelopersCommunity.PerformanceCounters
 {
@@ -22,8 +23,15 @@ namespace DevelopersCommunity.PerformanceCounters
         internal const uint PDH_NO_MORE_DATA = 0xC0000BCC;
         internal const uint PDH_ENTRY_NOT_IN_LOG_FILE = 0xC0000BCD;
         internal const uint PDH_CSTATUS_NO_OBJECT = 0xC0000BB8;
+        internal const uint PDH_RETRY = 0x800007D4;
         internal const uint PDH_DIALOG_CANCELLED = 0x800007D9;
 
+        internal const uint PDH_MAX_COUNTER_PATH = 2048;
+
+        internal const uint PERF_DETAIL_NOVICE = 100;
+        internal const uint PERF_DETAIL_ADVANCED = 200;
+        internal const uint PERF_DETAIL_EXPERT = 300;
+        internal const uint PERF_DETAIL_WIZARD = 400;
 
         internal const uint PDH_FMT_DOUBLE = 0x00000200;
 
@@ -72,35 +80,34 @@ namespace DevelopersCommunity.PerformanceCounters
 
         public delegate uint CounterPathCallBack(UIntPtr arg);
 
-        [StructLayout(LayoutKind.Sequential)]
-        internal unsafe struct PDH_BROWSE_DLG_CONFIG
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        internal struct PDH_BROWSE_DLG_CONFIG
         {
             public PDH_BROWSE_DLG_CONFIG_Flags Flags;
             public IntPtr hWndOwner;
-            public string DataSource;
-            
-            public byte* ReturnPathBuffer;
-            public uint ReturnPathLength;
-            public CounterPathCallBack CallBack;
-            public UIntPtr CallBackArg;
+            public string szDataSource;
+            public IntPtr szReturnPathBuffer;
+            public uint cchReturnPathLength;
+            public CounterPathCallBack pCallBack;
+            public IntPtr dwCallBackArg;
             public uint CallBackStatus;//PDH_STATUS
-            public uint DefaultDetailLevel;
-            public string DialogBoxCaption;
+            public uint dwDefaultDetailLevel;
+            public string szDialogBoxCaption;
         }
 
         [Flags]
         internal enum PDH_BROWSE_DLG_CONFIG_Flags : uint
         {
-            IncludeInstanceIndex = 1,
-            SingleCounterPerAdd = 2,
-            SingleCounterPerDialog = 4,
-            LocalCountersOnly = 8,
-            WildCardInstances = 16,
-            HideDetailBox = 32,
-            InitializePath = 64,
-            DisableMachineSelection = 128,
-            IncludeCostlyObjects = 256,
-            ShowObjectBrowser = 512
+            bIncludeInstanceIndex = 1,
+            bSingleCounterPerAdd = 2,
+            bSingleCounterPerDialog = 4,
+            bLocalCountersOnly = 8,
+            bWildCardInstances = 16,
+            bHideDetailBox = 32,
+            bInitializePath = 64,
+            bDisableMachineSelection = 128,
+            bIncludeCostlyObjects = 256,
+            bShowObjectBrowser = 512
         }
 
 
@@ -165,7 +172,7 @@ namespace DevelopersCommunity.PerformanceCounters
         internal static extern uint PdhGetDataSourceTimeRange(string szDataSource, out uint pdwNumEntries,
             out PDH_TIME_INFO pInfo, ref uint pdwBufferSize);
 
-        [DllImport("pdh.dll")]
+        [DllImport("pdh.dll", CharSet = CharSet.Unicode)]
         internal static extern uint PdhBrowseCounters(ref PDH_BROWSE_DLG_CONFIG config);
     }
 }

@@ -64,47 +64,67 @@ namespace DevelopersCommunity.PerformanceCounters
         }
 
         //TODO se for possivel tirar o unsafe, tirar tb a flag do projeto
-        public unsafe static IEnumerable<string> BrowseCounters(string title, string fileName)
+        public static IEnumerable<string> BrowseCounters(IntPtr hWndOwner, string title, string fileName)
         {
             NativeMethods.PDH_BROWSE_DLG_CONFIG config = new NativeMethods.PDH_BROWSE_DLG_CONFIG();
+            uint pathSize = NativeMethods.PDH_MAX_COUNTER_PATH;
+            char[] counters = new char[pathSize];
 
-            config.Flags |= NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.WildCardInstances
-                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.IncludeInstanceIndex
-                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.HideDetailBox
-                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.DisableMachineSelection
-                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.IncludeCostlyObjects
-                //| NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.SingleCounterPerAdd
-                | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.SingleCounterPerDialog
-                ;
-            config.DataSource = fileName;
-            config.DialogBoxCaption = title;
-            config.DefaultDetailLevel = 400;//TODO validar
+            GCHandle handle = GCHandle.Alloc(counters, GCHandleType.Pinned);
 
-            const int bufferSize = 10000;
-            var temp = new byte[bufferSize];
-            List<string> addedCounters = new List<string>();
-
-            config.CallBack = x => {
-                var status = config.CallBackStatus;
-                addedCounters.AddRange(NativeUtil.MultipleStringsToList(Encoding.UTF8.GetString(temp)));
-                return 0;
-            };
-
-            //TODO separar e implementar iterator
-            fixed (byte* t = temp)
+            try
             {
-                config.ReturnPathBuffer = t;
-                config.ReturnPathLength = bufferSize;
+                config.Flags |= NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.bWildCardInstances
+                    | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.bIncludeInstanceIndex
+                    | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.bIncludeCostlyObjects
+                    //| NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.bSingleCounterPerAdd
+                    | NativeMethods.PDH_BROWSE_DLG_CONFIG_Flags.bSingleCounterPerDialog
+                    ;
+                config.hWndOwner = hWndOwner;
+                config.szDataSource = fileName;
+                config.szDialogBoxCaption = title;
+                config.dwDefaultDetailLevel = NativeMethods.PERF_DETAIL_WIZARD;//TODO validar
+                config.szReturnPathBuffer = handle.AddrOfPinnedObject();
+                config.cchReturnPathLength = pathSize;
 
-                var status = NativeMethods.PdhBrowseCounters(ref config);
+                List<string> addedCounters = new List<string>();
 
-                if (status != NativeMethods.PDH_DIALOG_CANCELLED)
+                config.pCallBack = x =>
                 {
-                    NativeUtil.CheckPdhStatus(status);
-                }              
-            }
+                    var status = config.CallBackStatus;
 
-            return addedCounters;
+                    if (status == NativeMethods.PDH_MORE_DATA)
+                    {
+                        config.CallBackStatus = NativeMethods.PDH_RETRY;
+                        handle.Free();
+                        pathSize += NativeMethods.PDH_MAX_COUNTER_PATH;
+                        counters = new char[pathSize];
+                        handle = GCHandle.Alloc(counters, GCHandleType.Pinned);
+                        config.szReturnPathBuffer = handle.AddrOfPinnedObject();
+                        config.cchReturnPathLength = pathSize;
+                        return NativeMethods.ERROR_SUCCESS;
+                    }
+                    NativeUtil.CheckPdhStatus(status);
+
+                    addedCounters.AddRange(NativeUtil.MultipleStringsToList(counters));
+
+                    return NativeMethods.ERROR_SUCCESS;
+                };
+
+                var result = NativeMethods.PdhBrowseCounters(ref config);
+                if (result == NativeMethods.PDH_DIALOG_CANCELLED)
+                {
+                    addedCounters.Clear();
+                }
+
+                NativeUtil.CheckPdhStatus(result);
+
+                return addedCounters;
+            }
+            finally
+            {
+                handle.Free();
+            }
         }
 
         private static DateTime GetEndTime(string name)
