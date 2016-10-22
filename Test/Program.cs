@@ -9,7 +9,7 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            PCReader.BrowseCounters(IntPtr.Zero, "Title", args[0]);
+            //PCReader.BrowseCounters(IntPtr.Zero, "Title", args[0]);
             //string[] counters = { @"\\DESKTOP-355R7FE\Processor(*)\% Processor Time" };
             string[] counters = { @"\\*\Processor(*)\% Processor Time" };
 
@@ -42,9 +42,25 @@ namespace Test
         {
             Console.WriteLine("Start");
 
+            PCReader pcr = new PCReader(file, counters, true, new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Unspecified), new DateTime(2016, 9, 15, 17, 47, 00, DateTimeKind.Unspecified));
+            PcReaderEnumerable pcEnumerable = new PcReaderEnumerable(file, counters, true, new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Unspecified), new DateTime(2016, 9, 15, 17, 47, 00, DateTimeKind.Unspecified));
+
+            GetEnumeratorResetDispose(pcr, file, counters);
+
+            GetEnumerator(pcr);
+
+            Foreach(pcr);
+
+            PcReaderEnumerable(pcEnumerable);
+
+            //Relog takes 2229ms
+        }
+
+        private static PCReader GetEnumeratorResetDispose(PCReader pcr, string file, string[] counters)
+        {
             Stopwatch c = Stopwatch.StartNew();
 
-            PCReader pcr = new PCReader(file, counters, true, new DateTime(2016, 9, 15, 17, 32, 00, DateTimeKind.Unspecified), new DateTime(2016, 9, 15, 17, 47, 00, DateTimeKind.Unspecified));
+
             using (var enumerator = pcr.GetEnumerator())
             {
                 for (int i = 0; i < 10; i++)
@@ -55,7 +71,7 @@ namespace Test
                     {
                         foreach (var item in enumerator.Current)
                         {
-                            //Console.WriteLine("{0},{1},{2}", item.CounterPath, item.TimeStamp, item.Value);
+                            
                         }
                     }
                 }
@@ -64,8 +80,12 @@ namespace Test
             c.Stop();
 
             Console.WriteLine($"GetEnumerator (1) + Reset (N) + Dispose (1): {c.ElapsedMilliseconds}ms");
+            return pcr;
+        }
 
-            c.Restart();
+        private static void GetEnumerator(PCReader pcr)
+        {
+            Stopwatch c = Stopwatch.StartNew();
 
             for (int i = 0; i < 10; i++)
             {
@@ -84,8 +104,11 @@ namespace Test
             c.Stop();
 
             Console.WriteLine($"GetEnumerator (N) + Dispose(N): {c.ElapsedMilliseconds}ms");
+        }
 
-            c.Restart();
+        private static void Foreach(PCReader pcr)
+        {
+            Stopwatch c = Stopwatch.StartNew();
 
             for (int i = 0; i < 10; i++)
             {
@@ -101,8 +124,23 @@ namespace Test
             c.Stop();
 
             Console.WriteLine($"Foreach: {c.ElapsedMilliseconds}ms");
+        }
 
-            //Relog takes 2229ms
+        private static void PcReaderEnumerable(PcReaderEnumerable pcEnumerable)
+        {
+            Stopwatch c = Stopwatch.StartNew();
+
+            for (int i = 0; i < 10; i++)
+            {
+                foreach (var sample in pcEnumerable)
+                {
+
+                }
+            }
+
+            c.Stop();
+
+            Console.WriteLine($"Foreach novo: {c.ElapsedMilliseconds}ms");
         }
     }
 }

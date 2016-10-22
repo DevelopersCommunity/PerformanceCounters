@@ -46,6 +46,7 @@
     <Compile Include="NativeUtil.cs" />
     <Compile Include="PCException.cs" />
     <Compile Include="PCItem.cs" />
+    <Compile Include="PcReaderEnumerable.cs" />
     <Compile Include="PCReaderEnumerator.cs" />
     <Compile Include="PdhQueryHandle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
