@@ -114,7 +114,7 @@ namespace DevelopersCommunity.PerformanceCounters
                 var result = NativeMethods.PdhBrowseCounters(ref config);
                 if (result == NativeMethods.PDH_DIALOG_CANCELLED)
                 {
-                    addedCounters.Clear();
+                    return Enumerable.Empty<string>();
                 }
 
                 NativeUtil.CheckPdhStatus(result);
